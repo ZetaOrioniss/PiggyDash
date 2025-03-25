@@ -4,21 +4,37 @@
 
 int firstPlayerRound(char *player1, int bank1) {
     char player_choice;
+    
+    int total_round = 0;
 
     while (1) {
-        printf("You have %d pts in your bank!\nPress 'r' to get more or 'b' to save.\n%s > ", bank1, player1);
+
+        printf("You have %d pts in this round!\nPress 'r' to get more or 'b' to save.\n%s > ", total_round, player1);
         scanf(" %c", &player_choice);
+        
 
         if (player_choice == 'r') { 
+
             int dice = (rand() % 6) + 1;  
 
+            printf("You picked %d !\n\n", dice);
+
             if (dice == 1) {
-                printf("\nOh! It's a 1... You lose all points in the bank!\n");
-                return 0;
+                printf("\nOh! It's a 1... You lose all points in the bank for this round!\n");
+                return bank1 - total_round;
                 break;
             } 
-            
+
+            total_round += dice;
             bank1 += dice;
+
+            if(bank1 == 100 || bank1 > 100){
+
+                printf("Congrats %s ! You won with %d in your bank !\n\n", player1, bank1);
+                break;
+                exit(0);
+    
+            }
 
         } 
         
@@ -37,9 +53,18 @@ int firstPlayerRound(char *player1, int bank1) {
 
 int secondPlayerRound(char *player2, int bank2) {
     char player_choice;
+    int total_round = 0;
+
+
+    if(bank2 >= 100 || bank2 > 100){
+
+        printf("Congrats %s ! You won with %d in your bank !\n\n", player2, bank2);
+        return 0;
+
+    }
 
     while (1) {
-        printf("\n\nYou have %d pts in your bank!\nPress 'r' to get more or 'b' to save.\n\n%s > ", bank2, player2);
+        printf("\n\nYou have %d pts for this round!\nPress 'r' to get more or 'b' to save.\n\n%s > ", total_round, player2);
         scanf(" %c", &player_choice);
 
         if (player_choice == 'r') { 
@@ -47,11 +72,27 @@ int secondPlayerRound(char *player2, int bank2) {
 
             if (dice == 1) {
                 printf("\n\nOh! It's a 1... You lose all points in the bank!\n");
-                return 0;
+                return bank2 - total_round;
                 break;
             } 
             
+            total_round += dice;
             bank2 += dice;
+
+            if(bank2 == 20 || bank2 > 20){
+
+                printf("Congrats %s ! You won with %d in your bank !\n\n", player2, bank2);
+                break;
+                exit(0);
+    
+            }
+
+
+            if (dice == 1) {
+                printf("\n\nOh! It's a 1... You lose all points in the bank!\n");
+                return bank2 - total_round;
+                break;
+            } 
 
         } 
         
@@ -86,31 +127,15 @@ int main(void) {
     int bank1 = 0;
     int bank2 = 0;
 
-
-    printf("\nCurrent scores for each player:\n");
-    printf("%d pts - %s\n%d pts - %s\n\n", bank1, player1, bank2, player2);
-
-
     printf("The first player to play is: %s\n", player1);
 
-    while(bank1 < 100 || bank2 < 100){
-
-        bank1 = firstPlayerRound(player1, bank1);
-        bank2 = secondPlayerRound(player2, bank2);
+    while(1){
 
         printf("=== SCORE ===\n");
         printf("%d pts - %s\n%d pts - %s\n\n", bank1, player1, bank2, player2);
 
-        if(bank1 == 100){
-
-            printf("Congrats %s ! You won with %d in your bank !\n\n", player1, bank1);
-
-        }
-        if(bank2 == 100){
-
-            printf("Congrats %s ! You won with %d in your bank !\n\n", player2, bank2);
-
-        }
+        bank1 = firstPlayerRound(player1, bank1);
+        bank2 = secondPlayerRound(player2, bank2);
 
     }
 
