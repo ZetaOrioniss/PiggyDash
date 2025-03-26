@@ -1,144 +1,123 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <time.h>
+#include <unistd.h>
 
-int firstPlayerRound(char *player1, int bank1) {
-    char player_choice;
-    
-    int total_round = 0;
+#define MAX_PLAYERS 10
+#define WIN_SCORE 100
+
+typedef struct {
+
+    char name[20];
+
+    int score;
+
+} Player;
+
+int playRound(Player *player) {
+
+    char choice;
+
+    int roundScore = 0;
 
     while (1) {
 
-        printf("You have %d pts in this round!\nPress 'r' to get more or 'b' to save.\n%s > ", total_round, player1);
-        scanf(" %c", &player_choice);
-        
+        printf("\n%s, you have %d points in this round. Press 'r' to roll or 'b' to bank: ", player->name, roundScore);
 
-        if (player_choice == 'r') { 
+        scanf(" %c", &choice);
 
-            int dice = (rand() % 6) + 1;  
+        if (choice == 'r') {
 
-            printf("You picked %d !\n\n", dice);
+            int dice = (rand() % 6) + 1;
+
+            printf("%s rolled a %d!\n", player->name, dice);
 
             if (dice == 1) {
-                printf("\nOh! It's a 1... You lose all points in the bank for this round!\n");
-                return bank1 - total_round;
-                break;
-            } 
 
-            total_round += dice;
-            bank1 += dice;
+                printf("Oh no! You lost all points for this round.\n");
+                return player->score;
 
-            if(bank1 == 100 || bank1 > 100){
-
-                printf("Congrats %s ! You won with %d in your bank !\n\n", player1, bank1);
-                break;
-                exit(0);
-    
             }
 
+            roundScore += dice;
+
+            if (player->score + roundScore >= WIN_SCORE) {
+
+                player->score += roundScore;
+
+                printf("\n🎉 %s wins with %d points! 🎉\n", player->name, player->score);
+
+                exit(0);
+            }
+
+
         } 
-        
-        else if (player_choice == 'b') {
-            printf("%s decided to save the points!\n", player1);
-            return bank1;  
-            break;
+        else if (choice == 'b') {
+
+            player->score += roundScore;
+
+            printf("%s saved their points! Total: %d\n", player->name, player->score);
+
+            return player->score;
+
         } 
-        
+
         else {
+
             printf("Invalid choice! Try again.\n");
-            continue;
+
         }
+
     }
+
 }
 
-int secondPlayerRound(char *player2, int bank2) {
-    char player_choice;
-    int total_round = 0;
-
-
-    if(bank2 >= 100 || bank2 > 100){
-
-        printf("Congrats %s ! You won with %d in your bank !\n\n", player2, bank2);
-        return 0;
-
-    }
-
-    while (1) {
-        printf("\n\nYou have %d pts for this round!\nPress 'r' to get more or 'b' to save.\n\n%s > ", total_round, player2);
-        scanf(" %c", &player_choice);
-
-        if (player_choice == 'r') { 
-            int dice = (rand() % 6) + 1;  
-
-            if (dice == 1) {
-                printf("\n\nOh! It's a 1... You lose all points in the bank!\n");
-                return bank2 - total_round;
-                break;
-            } 
-            
-            total_round += dice;
-            bank2 += dice;
-
-            if(bank2 == 20 || bank2 > 20){
-
-                printf("Congrats %s ! You won with %d in your bank !\n\n", player2, bank2);
-                break;
-                exit(0);
-    
-            }
-
-
-            if (dice == 1) {
-                printf("\n\nOh! It's a 1... You lose all points in the bank!\n");
-                return bank2 - total_round;
-                break;
-            } 
-
-        } 
-        
-        else if (player_choice == 'b') {
-            printf("\n\n%s decided to save the points!\n", player2);
-            return bank2;  
-            break;
-        } 
-        
-        else {
-            printf("\n\nInvalid choice! Try again.\n\n");
-            continue;
-        }
-    }
-}
-
-
-int main(void) {
+int main() {
 
     srand(time(NULL));
 
-    char player1[20];
-    char player2[20];
+    int numPlayers;
+    printf("Enter the number of players (max %d): ", MAX_PLAYERS);
+    scanf("%d", &numPlayers);
 
+    if (numPlayers < 2 || numPlayers > MAX_PLAYERS) {
 
-    printf("\nWarning ! Player 1 begins !\nPseudo for player n°1: ");
-    scanf("%19s", player1);
+        printf("Invalid number of players. Choose between 2 and %d.\n", MAX_PLAYERS);
 
-    printf("Pseudo for player n°2: ");
-    scanf("%19s", player2);
+        return 1;
+    }
 
-    int bank1 = 0;
-    int bank2 = 0;
+    Player players[MAX_PLAYERS];
 
-    printf("The first player to play is: %s\n", player1);
+    for (int i = 0; i < numPlayers; i++) {
 
-    while(1){
+        printf("Enter the name of player %d: ", i + 1);
 
-        printf("=== SCORE ===\n");
-        printf("%d pts - %s\n%d pts - %s\n\n", bank1, player1, bank2, player2);
+        scanf("%19s", players[i].name);
 
-        bank1 = firstPlayerRound(player1, bank1);
-        bank2 = secondPlayerRound(player2, bank2);
+        players[i].score = 0;
+    }
 
+    printf("\n🎲 Let the game begin! 🎲\n");
+
+    int currentPlayer = 0;
+
+    while (1) {
+
+        printf("\n=== SCORE ===\n");
+
+        for (int i = 0; i < numPlayers; i++) {
+
+            printf("%s: %d pts\n", players[i].name, players[i].score);
+
+        }
+
+        sleep(1);
+
+        players[currentPlayer].score = playRound(&players[currentPlayer]); // IA
+
+        currentPlayer = (currentPlayer + 1) % numPlayers; // IA
     }
 
     return 0;
-
 }
