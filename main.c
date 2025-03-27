@@ -91,8 +91,9 @@ int main() {
         if (currentPlayer == 0) {
 
             currentRound++;
-            
+
         }
+        
     }
     
     return 0;
