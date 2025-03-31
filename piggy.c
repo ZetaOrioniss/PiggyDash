@@ -2,13 +2,15 @@
 #include <stdlib.h>
 #include <time.h>
 #include <unistd.h>
+#include <string.h>
 
 #define MAX_PLAYERS 10
 #define WIN_SCORE 100
+#define MAX_USERNAME_LEN 20
 
 typedef struct {
 
-    char name[20];
+    char name[MAX_USERNAME_LEN];
     int isBot;
     int score;
 
@@ -163,7 +165,17 @@ int main() { // main function
     for (int i = 0; i < numPlayers; i++) {
 
         printf("Enter the name of human player %d: ", i + 1);
-        scanf("%19s", allPlayers[i].name);
+        scanf("%s", allPlayers[i].name);
+        printf("%zu\n", strlen(allPlayers[i].name));
+
+
+        if (strlen(allPlayers[i].name) > MAX_USERNAME_LEN){ // this condition is not verified, have to fix this
+
+            printf("\nPlease choose a username of 20 characteres max.\n\n");
+            return 1;
+
+        }
+
         allPlayers[i].score = 0;
         allPlayers[i].isBot = 0;
     }
@@ -200,7 +212,7 @@ int main() { // main function
 
         sleep(1);
 
-        if (allPlayers[currentPlayer].isBot) {
+        if (allPlayers[currentPlayer].isBot == 1) {
 
             allPlayers[currentPlayer].score = botPlayRound(&allPlayers[currentPlayer], currentRound); // if the current player is bot1 in the order, botPlayRound(bot1)
 
