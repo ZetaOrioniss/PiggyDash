@@ -6,10 +6,11 @@
 
 #define MAX_PLAYERS 10
 #define WIN_SCORE 100
+#define MAX_USERNAME_LEN 20
 
 typedef struct {
 
-    char name[20];
+    char name[MAX_USERNAME_LEN];
     int isBot;
     int score;
 
@@ -164,11 +165,11 @@ int main() { // main function
     for (int i = 0; i < numPlayers; i++) {
 
         printf("Enter the name of human player %d: ", i + 1);
-        scanf("%20s", allPlayers[i].name);
+        scanf("%s", allPlayers[i].name);
         printf("%zu\n", strlen(allPlayers[i].name));
 
 
-        if (strlen(allPlayers[i].name) > 20){ // this condition if not verified, have to fix this
+        if (strlen(allPlayers[i].name) > MAX_USERNAME_LEN){ // this condition is not verified, have to fix this
 
             printf("\nPlease choose a username of 20 characteres max.\n\n");
             return 1;
